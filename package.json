@@ -1,0 +1,26 @@
+{
+  "name": "gaza-news-feed",
+  "version": "1.0.0",
+  "description": "Real-time news aggregator for Gaza-related news from international sources",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "npx serve"
+  },
+  "keywords": [
+    "gaza",
+    "news",
+    "rss",
+    "feed",
+    "aggregator",
+    "palestine",
+    "middle-east"
+  ],
+  "author": "Gaza News Feed",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/gaza-news-feed.git"
+  },
+  "homepage": "https://yourusername.github.io/gaza-news-feed"
+}

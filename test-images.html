@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaza News Feed - Image Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #0f0;
+        }
+        .test-result {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #0f0;
+            background: #000;
+        }
+        .image-preview {
+            max-width: 200px;
+            height: auto;
+            margin: 10px 0;
+            border: 2px solid #0f0;
+        }
+        .success { color: #0f0; }
+        .error { color: #f00; }
+        .info { color: #ff0; }
+        button {
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Gaza News Feed - Image Extraction Test</h1>
+    
+    <div id="controls">
+        <button onclick="testImageExtraction()">Test Image Extraction</button>
+        <button onclick="clearLog()">Clear</button>
+    </div>
+    
+    <div id="output"></div>
+
+    <script src="config.js"></script>
+    <script>
+        const output = document.getElementById('output');
+        
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = message;
+            output.appendChild(div);
+        }
+        
+        function clearLog() {
+            output.innerHTML = '';
+        }
+        
+        async function testImageExtraction() {
+            clearLog();
+            log('=== Testing Image Extraction from RSS Feeds ===', 'info');
+            
+            for (const [source, feedConfig] of Object.entries(RSS_FEEDS)) {
+                const testDiv = document.createElement('div');
+                testDiv.className = 'test-result';
+                testDiv.innerHTML = `<h3>Testing ${feedConfig.name}</h3>`;
+                output.appendChild(testDiv);
+                
+                try {
+                    const proxyUrl = `${feedConfig.proxy}${encodeURIComponent(feedConfig.url)}`;
+                    log(`Fetching: ${feedConfig.url}`, 'info');
+                    
+                    const response = await fetch(proxyUrl);
+                    if (!response.ok) {
+                        log(`✗ Failed to fetch: ${response.status}`, 'error');
+                        continue;
+                    }
+                    
+                    const xmlText = await response.text();
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+                    
+                    const items = xmlDoc.querySelectorAll('item, entry');
+                    log(`Found ${items.length} items`, 'info');
+                    
+                    let imageCount = 0;
+                    const maxItems = 3; // Test first 3 items
+                    
+                    for (let i = 0; i < Math.min(maxItems, items.length); i++) {
+                        const item = items[i];
+                        const title = item.querySelector('title')?.textContent || 'No title';
+                        
+                        log(`<br><b>Article ${i+1}:</b> ${title.substring(0, 60)}...`, 'info');
+                        
+                        // Check for images in various places
+                        const checks = [
+                            { selector: 'media\\:thumbnail, thumbnail', attr: 'url', name: 'media:thumbnail' },
+                            { selector: 'media\\:content, content', attr: 'url', name: 'media:content' },
+                            { selector: 'enclosure[type^="image"]', attr: 'url', name: 'enclosure' },
+                            { selector: 'image url', text: true, name: 'image/url' },
+                            { selector: 'itunes\\:image', attr: 'href', name: 'itunes:image' }
+                        ];
+                        
+                        let foundImage = false;
+                        
+                        for (const check of checks) {
+                            const element = item.querySelector(check.selector);
+                            if (element) {
+                                let imageUrl;
+                                if (check.text) {
+                                    imageUrl = element.textContent;
+                                } else {
+                                    imageUrl = element.getAttribute(check.attr);
+                                }
+                                
+                                if (imageUrl) {
+                                    log(`✓ Found ${check.name}: ${imageUrl.substring(0, 100)}...`, 'success');
+                                    
+                                    // Show preview
+                                    const img = document.createElement('img');
+                                    img.src = imageUrl;
+                                    img.className = 'image-preview';
+                                    img.onerror = () => {
+                                        img.style.display = 'none';
+                                        log(`✗ Image failed to load`, 'error');
+                                    };
+                                    testDiv.appendChild(img);
+                                    
+                                    foundImage = true;
+                                    imageCount++;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        // Check in description/content
+                        if (!foundImage) {
+                            const description = item.querySelector('description, content, summary')?.textContent || '';
+                            const imgMatch = description.match(/<img[^>]+src=["']([^"'>]+)["']/);
+                            if (imgMatch) {
+                                log(`✓ Found image in description: ${imgMatch[1].substring(0, 100)}...`, 'success');
+                                imageCount++;
+                            } else {
+                                log(`✗ No image found for this article`, 'error');
+                            }
+                        }
+                    }
+                    
+                    log(`<br><b>Summary:</b> Found images in ${imageCount}/${Math.min(maxItems, items.length)} articles`, 
+                        imageCount > 0 ? 'success' : 'error');
+                    
+                } catch (error) {
+                    log(`✗ Error: ${error.message}`, 'error');
+                }
+            }
+            
+            log('<br>=== Test Complete ===', 'info');
+        }
+        
+        // Auto-run on load
+        window.onload = () => {
+            log('Click "Test Image Extraction" to analyze RSS feeds for images', 'info');
+        };
+    </script>
+</body>
+</html>

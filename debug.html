@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaza News Feed - Debug Mode</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #0f0;
+        }
+        .feed-test {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #0f0;
+            background: #000;
+        }
+        .success { color: #0f0; }
+        .error { color: #f00; }
+        .info { color: #ff0; }
+        button {
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0a0;
+        }
+        pre {
+            overflow-x: auto;
+            background: #111;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Gaza News Feed - Debug & Test Mode</h1>
+    
+    <div id="controls">
+        <button onclick="testAllFeeds()">Test All Feeds</button>
+        <button onclick="testAlJazeera()">Test Al Jazeera</button>
+        <button onclick="testReuters()">Test Reuters</button>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+    
+    <div id="output"></div>
+
+    <script>
+        const output = document.getElementById('output');
+        
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            output.appendChild(div);
+        }
+        
+        function clearLog() {
+            output.innerHTML = '';
+        }
+        
+        async function testFeed(name, url, proxy) {
+            const testDiv = document.createElement('div');
+            testDiv.className = 'feed-test';
+            testDiv.innerHTML = `<h3>Testing ${name}</h3>`;
+            output.appendChild(testDiv);
+            
+            try {
+                // Test 1: Direct URL (will likely fail due to CORS)
+                log(`Testing direct URL: ${url}`, 'info');
+                try {
+                    const directResponse = await fetch(url);
+                    log(`✓ Direct access works! Status: ${directResponse.status}`, 'success');
+                } catch (e) {
+                    log(`✗ Direct access blocked (CORS) - This is expected`, 'error');
+                }
+                
+                // Test 2: With proxy
+                const proxyUrl = `${proxy}${encodeURIComponent(url)}`;
+                log(`Testing with proxy: ${proxy}`, 'info');
+                
+                const response = await fetch(proxyUrl);
+                log(`Response status: ${response.status}`, 'info');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const text = await response.text();
+                log(`✓ Received ${text.length} characters`, 'success');
+                
+                // Parse XML
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, 'text/xml');
+                
+                // Check for parse errors
+                const parseError = xmlDoc.querySelector('parsererror');
+                if (parseError) {
+                    log(`✗ XML Parse Error: ${parseError.textContent}`, 'error');
+                    log(`First 500 chars of response: <pre>${text.substring(0, 500)}</pre>`, 'info');
+                    return;
+                }
+                
+                // Count items
+                const items = xmlDoc.querySelectorAll('item, entry');
+                log(`✓ Found ${items.length} news items`, 'success');
+                
+                // Show first item
+                if (items.length > 0) {
+                    const firstItem = items[0];
+                    const title = firstItem.querySelector('title')?.textContent || 'No title';
+                    log(`First item title: "${title}"`, 'success');
+                }
+                
+                // Count Gaza-related items
+                let gazaCount = 0;
+                items.forEach(item => {
+                    const title = item.querySelector('title')?.textContent || '';
+                    const desc = item.querySelector('description, summary, content')?.textContent || '';
+                    const content = `${title} ${desc}`.toLowerCase();
+                    
+                    const keywords = ['gaza', 'palestine', 'palestinian', 'israel', 'hamas'];
+                    if (keywords.some(keyword => content.includes(keyword))) {
+                        gazaCount++;
+                    }
+                });
+                
+                log(`✓ Found ${gazaCount} Gaza-related items`, 'success');
+                
+            } catch (error) {
+                log(`✗ Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testAllFeeds() {
+            clearLog();
+            log('=== STARTING FEED TESTS ===', 'info');
+            
+            const feeds = [
+                {
+                    name: 'Al Jazeera',
+                    url: 'https://www.aljazeera.com/xml/rss/all.xml',
+                    proxy: 'https://api.allorigins.win/raw?url='
+                },
+                {
+                    name: 'BBC News',
+                    url: 'https://feeds.bbci.co.uk/news/world/middle_east/rss.xml',
+                    proxy: 'https://api.allorigins.win/raw?url='
+                },
+                {
+                    name: 'Reuters (Google News)',
+                    url: 'https://news.google.com/rss/search?q=gaza+palestine+when:3d&hl=en&gl=US&ceid=US:en',
+                    proxy: 'https://api.allorigins.win/raw?url='
+                },
+                {
+                    name: 'The Guardian',
+                    url: 'https://www.theguardian.com/world/middleeast/rss',
+                    proxy: 'https://api.allorigins.win/raw?url='
+                }
+            ];
+            
+            for (const feed of feeds) {
+                await testFeed(feed.name, feed.url, feed.proxy);
+            }
+            
+            log('=== TESTS COMPLETE ===', 'info');
+        }
+        
+        async function testAlJazeera() {
+            clearLog();
+            log('=== TESTING AL JAZEERA FEEDS ===', 'info');
+            
+            const urls = [
+                'https://www.aljazeera.com/xml/rss/all.xml',
+                'https://www.aljazeera.com/feed/rss',
+                'https://news.google.com/rss/search?q=site:aljazeera.com+gaza&hl=en&gl=US&ceid=US:en'
+            ];
+            
+            const proxies = [
+                'https://api.allorigins.win/raw?url=',
+                'https://corsproxy.io/?',
+                'https://api.codetabs.com/v1/proxy?quest='
+            ];
+            
+            for (const url of urls) {
+                for (const proxy of proxies) {
+                    await testFeed(`Al Jazeera (${url.substring(0, 50)}...)`, url, proxy);
+                }
+            }
+        }
+        
+        async function testReuters() {
+            clearLog();
+            log('=== TESTING REUTERS FEEDS ===', 'info');
+            
+            const urls = [
+                'https://news.google.com/rss/search?q=gaza+palestine+site:reuters.com+when:3d&hl=en&gl=US&ceid=US:en',
+                'https://news.google.com/rss/search?q=gaza+when:7d&hl=en&gl=US&ceid=US:en',
+                'https://news.google.com/rss/topics/CAAqJQgKIh9DQkFTRVFvSUwyMHZNRE4yTVRRU0JXVnVMVWRDS0FBUAE?hl=en-US&gl=US&ceid=US%3Aen'
+            ];
+            
+            const proxies = [
+                'https://api.allorigins.win/raw?url=',
+                'https://corsproxy.io/?'
+            ];
+            
+            for (const url of urls) {
+                for (const proxy of proxies) {
+                    await testFeed(`Reuters (${url.substring(0, 50)}...)`, url, proxy);
+                }
+            }
+        }
+        
+        // Auto-run test on load
+        window.onload = () => {
+            log('Debug mode loaded. Click buttons above to test feeds.', 'info');
+        };
+    </script>
+</body>
+</html>

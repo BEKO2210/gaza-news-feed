@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaza News Feed - Setup Instructions</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        h1 { color: #2c3e50; border-bottom: 3px solid #e74c3c; padding-bottom: 10px; }
+        h2 { color: #34495e; margin-top: 30px; }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #dc3545;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            background: #2c3e50;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        pre {
+            background: #2c3e50;
+            color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        .step {
+            background: white;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 Gaza News Feed - Setup & Troubleshooting</h1>
+    
+    <div class="warning">
+        <strong>⚠️ Aktuelle Probleme gefunden:</strong>
+        <ul>
+            <li>Al Jazeera Direct RSS: CORS blockiert</li>
+            <li>Reuters Direct RSS: Feed nicht verfügbar</li>
+            <li>Lösung: Google News RSS als Alternative implementiert</li>
+        </ul>
+    </div>
+
+    <h2>✅ Was funktioniert:</h2>
+    <div class="success">
+        <ul>
+            <li><strong>BBC News:</strong> Vollständig funktionsfähig</li>
+            <li><strong>The Guardian:</strong> Vollständig funktionsfähig</li>
+            <li><strong>Google News Suche:</strong> Alternative für Al Jazeera & Reuters</li>
+            <li><strong>Design:</strong> Logo vergrößert, Text entfernt</li>
+        </ul>
+    </div>
+
+    <h2>📋 Wichtige Schritte:</h2>
+    
+    <div class="step">
+        <h3>1. Logo hinzufügen</h3>
+        <p>Kopiere dein Logo-Bild nach:</p>
+        <code>C:\Users\belki\Desktop\Claude\gaza-news-feed\Logo\logo.png</code>
+    </div>
+
+    <div class="step">
+        <h3>2. Lokaler Test</h3>
+        <p>Öffne die Datei direkt im Browser:</p>
+        <pre>C:\Users\belki\Desktop\Claude\gaza-news-feed\index.html</pre>
+        <p>Oder starte einen lokalen Server:</p>
+        <pre>cd "C:\Users\belki\Desktop\Claude\gaza-news-feed"
+python -m http.server 8000</pre>
+    </div>
+
+    <div class="step">
+        <h3>3. GitHub Upload</h3>
+        <pre>cd "C:\Users\belki\Desktop\Claude\gaza-news-feed"
+git add .
+git commit -m "Gaza News Feed with logo and fixed RSS feeds"
+git push origin main</pre>
+    </div>
+
+    <div class="step">
+        <h3>4. GitHub Pages aktivieren</h3>
+        <ol>
+            <li>Gehe zu Settings → Pages</li>
+            <li>Source: "Deploy from a branch"</li>
+            <li>Branch: "main" / Folder: "/ (root)"</li>
+            <li>Save klicken</li>
+            <li>Warte 2-5 Minuten</li>
+            <li>Deine Seite: <code>https://[username].github.io/gaza-news-feed</code></li>
+        </ol>
+    </div>
+
+    <h2>🔧 Fehlerbehebung:</h2>
+    
+    <div class="error">
+        <h3>Falls keine Nachrichten angezeigt werden:</h3>
+        <ol>
+            <li>Öffne Browser-Konsole (F12)</li>
+            <li>Schaue nach Fehlermeldungen</li>
+            <li>Teste mit <code>debug.html</code></li>
+            <li>Warte 30 Sekunden (manche Feeds laden langsam)</li>
+        </ol>
+    </div>
+
+    <h2>📊 Feed-Status testen:</h2>
+    <button onclick="window.open('debug.html', '_blank')">Debug-Tool öffnen</button>
+    <button onclick="window.open('index.html', '_blank')">Hauptseite öffnen</button>
+
+    <h2>🎨 Anpassungen:</h2>
+    <div class="step">
+        <h3>Logo-Größe ändern:</h3>
+        <p>In <code>styles.css</code> Zeile 62:</p>
+        <pre>.logo-image {
+    height: 60px;  /* Ändere diesen Wert */
+}</pre>
+    </div>
+
+    <div class="step">
+        <h3>Update-Intervall ändern:</h3>
+        <p>In <code>config.js</code>:</p>
+        <pre>const UPDATE_INTERVAL = 10 * 60 * 1000;  // 10 Minuten
+// Ändere zu z.B. 5 Minuten:
+const UPDATE_INTERVAL = 5 * 60 * 1000;</pre>
+    </div>
+
+    <h2>💡 Tipps:</h2>
+    <ul>
+        <li>Nutze Chrome oder Firefox für beste Kompatibilität</li>
+        <li>Deaktiviere Ad-Blocker beim Testen</li>
+        <li>Leere den Browser-Cache bei Problemen (Strg+F5)</li>
+        <li>Die erste Ladung kann länger dauern</li>
+    </ul>
+
+    <div class="success">
+        <h3>✨ Projekt ist bereit!</h3>
+        <p>Deine Gaza News Feed Webseite ist vollständig konfiguriert und kann online gestellt werden.</p>
+        <p>Features:</p>
+        <ul>
+            <li>Automatische Updates alle 10 Minuten</li>
+            <li>6 Nachrichtenquellen</li>
+            <li>Responsives Design</li>
+            <li>Dark Mode Support</li>
+            <li>Optimiert für Mobile</li>
+        </ul>
+    </div>
+</body>
+</html>

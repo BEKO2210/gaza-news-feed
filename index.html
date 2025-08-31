@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gaza News Feed - Real-time news updates from Gaza in English">
+    <meta name="keywords" content="Gaza, News, Palestine, Middle East, Updates">
+    <meta name="author" content="Gaza News Feed">
+    <meta property="og:title" content="Gaza News Feed">
+    <meta property="og:description" content="Real-time news updates from Gaza in English">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="Logo/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <title>Gaza News Feed - Live Updates</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="Logo/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="Logo/logo.png" alt="Gaza News Feed" class="logo-image">
+                </div>
+                <div class="header-info">
+                    <span class="update-status" id="updateStatus">
+                        <span class="status-dot"></span>
+                        <span id="lastUpdate">Updating...</span>
+                    </span>
+                    <button class="refresh-btn" id="refreshBtn" aria-label="Refresh news">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <nav class="filter-nav">
+                <button class="filter-btn active" data-source="all">All Sources</button>
+                <button class="filter-btn" data-source="bbc">BBC</button>
+                <button class="filter-btn" data-source="guardian">The Guardian</button>
+                <button class="filter-btn" data-source="aljazeera">Al Jazeera</button>
+                <button class="filter-btn" data-source="reuters">Reuters</button>
+                <button class="filter-btn" data-source="middleeasteye">Middle East Eye</button>
+                <button class="filter-btn" data-source="apnews">AP News</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Loading Indicator -->
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <p>Loading latest news...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div class="error-message" id="errorMessage" style="display: none;">
+                <p>Unable to load news. Please check your connection and try again.</p>
+                <button class="retry-btn" onclick="loadAllFeeds()">Retry</button>
+            </div>
+
+            <!-- News Grid -->
+            <div class="news-grid" id="newsGrid"></div>
+        </div>
+    </main>
+
+    <!-- Modal for Article Details -->
+    <div class="modal" id="articleModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Cookie Consent Banner -->
+    <div class="cookie-banner" id="cookieBanner">
+        <div class="cookie-content">
+            <p>We use cookies to improve your experience. By continuing, you agree to our use of cookies.</p>
+            <div class="cookie-actions">
+                <button class="cookie-btn accept" id="acceptCookies">Accept</button>
+                <button class="cookie-btn reject" id="rejectCookies">Reject</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Gaza News Feed. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" id="aboutLink">About</a>
+                <a href="#" id="privacyLink">Privacy Policy</a>
+                <a href="#" id="contactLink">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="default-images.js"></script>
+    <script src="images-database.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
