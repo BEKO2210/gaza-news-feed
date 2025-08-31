@@ -14,8 +14,7 @@ A real-time news aggregator for Gaza-related news from trusted international sou
 - 📊 **Clean UI**: Modern, accessible interface
 
 ## Live Demo
-
-Visit: [https://yourusername.github.io/gaza-news-feed](https://yourusername.github.io/gaza-news-feed)
+Visit: [https://yourusername.github.io/gaza-news-feed](https://BEKO2210.github.io/gaza-news-feed)
 
 ## Installation
 
